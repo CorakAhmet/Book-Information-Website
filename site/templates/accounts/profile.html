@@ -1,0 +1,103 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Profil - Kitap Uygulaması{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Profil Bilgileri</h4>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile.profile_image %}
+                <img src="{{ user.profile.profile_image.url }}" alt="{{ user.username }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                <div class="mx-auto bg-secondary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                    <i class="fas fa-user fa-5x text-white"></i>
+                </div>
+                {% endif %}
+                
+                <h3>{{ user.username }}</h3>
+                <p class="text-muted">
+                    {% if user.first_name or user.last_name %}
+                    {{ user.first_name }} {{ user.last_name }}
+                    {% endif %}
+                </p>
+                <p class="text-muted">{{ user.email }}</p>
+                
+                {% if user.profile.bio %}
+                <div class="mt-3">
+                    <h5>Hakkında</h5>
+                    <p>{{ user.profile.bio }}</p>
+                </div>
+                {% endif %}
+                
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-edit me-1"></i> Profili Düzenle
+                </a>
+            </div>
+            <div class="card-footer text-muted">
+                <small>Kayıt Tarihi: {{ user.profile.created_at|date:"d F Y" }}</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Kütüphanem</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for user_book in user.userlibrary_set.all %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    {% if user_book.book.cover_image %}
+                                    <img src="{{ user_book.book.cover_image.url }}" class="img-fluid rounded-start h-100" style="object-fit: cover;" alt="{{ user_book.book.title }}">
+                                    {% else %}
+                                    <div class="bg-secondary h-100 d-flex align-items-center justify-content-center rounded-start">
+                                        <i class="fas fa-book fa-2x text-white"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ user_book.book.title }}</h5>
+                                        <p class="card-text text-muted">{{ user_book.book.author }}</p>
+                                        
+                                        {% if user_book.completion > 0 %}
+                                        <div class="progress mb-2" style="height: 10px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ user_book.completion }}%" aria-valuenow="{{ user_book.completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <p class="card-text"><small class="text-muted">{{ user_book.completion }}% tamamlandı</small></p>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'book_detail' user_book.book.id %}" class="btn btn-sm btn-outline-primary">Detaylar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <p>Kütüphanenizde henüz kitap bulunmuyor.</p>
+                            <a href="{% url 'book_list' %}" class="btn btn-primary">Kitaplara Göz At</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if user.userlibrary_set.count > 0 %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'user_library' %}" class="btn btn-outline-primary">Tüm Kütüphanemi Görüntüle</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
