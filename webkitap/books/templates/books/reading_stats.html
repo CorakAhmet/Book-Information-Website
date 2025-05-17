@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Okuma İstatistiklerim - Kitaplarım{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4 text-center">Okuma İstatistiklerim</h1>
+    
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card text-center shadow h-100">
+                <div class="card-body">
+                    <h2 class="display-4">{{ books_read }}</h2>
+                    <h5>Okuduğum Kitap</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow h-100">
+                <div class="card-body">
+                    <h2 class="display-4">{{ books_reading.count }}</h2>
+                    <h5>Okumakta Olduğum</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow h-100">
+                <div class="card-body">
+                    <h2 class="display-4">{{ books_to_read.count }}</h2>
+                    <h5>Okuma Listemde</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center shadow h-100">
+                <div class="card-body">
+                    <h2 class="display-4">{{ total_pages_read }}</h2>
+                    <h5>Toplam Sayfa</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Aktif Okumalarım</h3>
+                </div>
+                <div class="card-body">
+                    {% if books_reading %}
+                        <div class="list-group">
+                            {% for user_book in books_reading %}
+                                <a href="{% url 'book_detail' user_book.book.id %}" class="list-group-item list-group-item-action">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ user_book.book.title }}</h5>
+                                        <small>{{ user_book.completion }}% tamamlandı</small>
+                                    </div>
+                                    <div class="progress mt-2" style="height: 10px;">
+                                        <div class="progress-bar progress-item" role="progressbar" 
+                                            data-id="{{ user_book.id }}"
+                                            data-completion="{{ user_book.completion }}"
+                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center py-3">Şu anda aktif olarak okuduğunuz kitap bulunmuyor.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">Okuma Hedeflerim</h3>
+                </div>
+                <div class="card-body">
+                    {% if reading_goals %}
+                        <div class="list-group">
+                            {% for goal in reading_goals %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">{{ goal.get_period_display }} Hedefim</h5>
+                                        <small>{{ goal.start_date|date:"d.m.Y" }} - {{ goal.end_date|date:"d.m.Y" }}</small>
+                                    </div>
+                                    <p class="mb-1">
+                                        {% if goal.target_books > 0 %}
+                                            <span class="badge bg-primary">{{ goal.target_books }} kitap</span>
+                                        {% endif %}
+                                        {% if goal.target_pages > 0 %}
+                                            <span class="badge bg-secondary">{{ goal.target_pages }} sayfa</span>
+                                        {% endif %}
+                                    </p>
+                                    <p class="mb-0">
+                                        <small class="text-{% if goal.is_completed %}success{% else %}muted{% endif %}">
+                                            {% if goal.is_completed %}
+                                                <i class="fas fa-check-circle"></i> Tamamlandı
+                                            {% else %}
+                                                <i class="fas fa-hourglass-half"></i> Devam ediyor
+                                            {% endif %}
+                                        </small>
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center py-3">Henüz okuma hedefi belirlemediz. <a href="{% url 'set_reading_goal' %}" class="btn btn-sm btn-outline-success">Hedef Belirle</a></p>
+                    {% endif %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'set_reading_goal' %}" class="btn btn-success">
+                            <i class="fas fa-target"></i> Yeni Hedef Belirle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Okuma Oturumları Tablosu -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">Okuma Oturumlarım</h3>
+        </div>
+        <div class="card-body">
+            {% if reading_sessions %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Kitap</th>
+                                <th>Süre</th>
+                                <th>Sayfa</th>
+                                <th>Notlar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in reading_sessions %}
+                                <tr>
+                                    <td>{{ session.date|date:"d.m.Y" }}</td>
+                                    <td><a href="{% url 'book_detail' session.user_book.book.id %}">{{ session.user_book.book.title }}</a></td>
+                                    <td>{{ session.duration }} dk</td>
+                                    <td>{{ session.pages_read }}</td>
+                                    <td>{{ session.notes|truncatechars:50 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center py-3">Henüz okuma oturumu kaydetmediniz.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // İlerleme çubuklarını ayarla
+        const progressBars = document.querySelectorAll('.progress-bar.progress-item');
+        progressBars.forEach(function(bar) {
+            const completion = bar.dataset.completion;
+            bar.style.width = completion + '%';
+            bar.setAttribute('aria-valuenow', completion);
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

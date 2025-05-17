@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Kaydol | Kitaplarım{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="mb-4 text-center">Kaydol</h1>
+                    
+                    {% if form.errors %}
+                      <div class="alert alert-danger">
+                        {{ form.errors }}
+                      </div>
+                    {% endif %}
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Kaydol</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <p>Zaten hesabınız var mı? <a href="{% url 'login' %}">Giriş Yapın</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

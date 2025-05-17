@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Okuma Hedefi Belirle - Kitaplarım{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0">Okuma Hedefi Belirle</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="period" class="form-label">Hedef Süresi</label>
+                            <select class="form-select" id="period" name="period" required>
+                                <option value="" selected disabled>Süre seçin</option>
+                                {% for period_value, period_name in period_choices %}
+                                    <option value="{{ period_value }}">{{ period_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="start_date" class="form-label">Başlangıç Tarihi</label>
+                                    <input type="date" class="form-control" id="start_date" name="start_date" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="end_date" class="form-label">Bitiş Tarihi</label>
+                                    <input type="date" class="form-control" id="end_date" name="end_date" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="target_books" class="form-label">Hedef Kitap Sayısı</label>
+                                    <input type="number" class="form-control" id="target_books" name="target_books" min="0" value="0">
+                                    <div class="form-text">En az bir kitap veya sayfa hedefi belirleyin.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="target_pages" class="form-label">Hedef Sayfa Sayısı</label>
+                                    <input type="number" class="form-control" id="target_pages" name="target_pages" min="0" value="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{% url 'reading_stats' %}" class="btn btn-light me-2">İptal</a>
+                            <button type="submit" class="btn btn-success">Hedefi Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Bugünün tarihini başlangıç tarihi olarak ayarla
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('start_date').value = today;
+        
+        // Dönem seçimine göre bitiş tarihini otomatik doldur
+        const periodSelect = document.getElementById('period');
+        periodSelect.addEventListener('change', function() {
+            const startDate = new Date(document.getElementById('start_date').value);
+            let endDate = new Date(startDate);
+            
+            // Seçilen döneme göre bitiş tarihini hesapla
+            switch(this.value) {
+                case 'daily':
+                    // Aynı gün
+                    break;
+                case 'weekly':
+                    endDate.setDate(startDate.getDate() + 7);
+                    break;
+                case 'monthly':
+                    endDate.setMonth(startDate.getMonth() + 1);
+                    break;
+                case 'yearly':
+                    endDate.setFullYear(startDate.getFullYear() + 1);
+                    break;
+            }
+            
+            document.getElementById('end_date').value = endDate.toISOString().split('T')[0];
+        });
+    });
+</script>
+{% endblock %} 

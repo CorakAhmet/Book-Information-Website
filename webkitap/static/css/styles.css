@@ -1,0 +1,128 @@
+/* Genel Stiller */
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+}
+
+a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0a58ca;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Kitap Kartları */
+.book-card {
+    transition: transform 0.3s ease-in-out;
+    border: none;
+    overflow: hidden;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+}
+
+.book-cover {
+    height: 200px;
+    object-fit: cover;
+}
+
+.book-detail-cover {
+    max-height: 400px;
+    object-fit: contain;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+/* Kategori Kartları */
+.category-card {
+    transition: background-color 0.3s;
+    border: none;
+}
+
+.category-card:hover {
+    background-color: #f8f9fa;
+}
+
+/* Footer */
+footer {
+    margin-top: 3rem;
+}
+
+footer a {
+    color: #f8f9fa;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+/* Kullanıcı Profili */
+.profile-header {
+    background-color: #f8f9fa;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 5px solid #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* Kütüphane Sayfası */
+.progress-sm {
+    height: 8px;
+}
+
+/* İlerleme çubukları için dinamik sınıflar */
+.progress-width-0 { width: 0%; }
+.progress-width-5 { width: 5%; }
+.progress-width-10 { width: 10%; }
+.progress-width-15 { width: 15%; }
+.progress-width-20 { width: 20%; }
+.progress-width-25 { width: 25%; }
+.progress-width-30 { width: 30%; }
+.progress-width-35 { width: 35%; }
+.progress-width-40 { width: 40%; }
+.progress-width-45 { width: 45%; }
+.progress-width-50 { width: 50%; }
+.progress-width-55 { width: 55%; }
+.progress-width-60 { width: 60%; }
+.progress-width-65 { width: 65%; }
+.progress-width-70 { width: 70%; }
+.progress-width-75 { width: 75%; }
+.progress-width-80 { width: 80%; }
+.progress-width-85 { width: 85%; }
+.progress-width-90 { width: 90%; }
+.progress-width-95 { width: 95%; }
+.progress-width-100 { width: 100%; }
+
+/* Responsive Ayarlar */
+@media (max-width: 767.98px) {
+    .book-cover {
+        height: 250px;
+    }
+    
+    .profile-image {
+        width: 100px;
+        height: 100px;
+    }
+} 

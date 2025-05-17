@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil | Kitaplarım{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="profile-header py-5 mb-4 text-center bg-light rounded">
+                <div class="mb-3">
+                    {% if user.profile.profile_image %}
+                        <img src="{{ user.profile.profile_image.url }}" class="profile-image" alt="{{ user.username }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" class="profile-image" alt="{{ user.username }}">
+                    {% endif %}
+                </div>
+                <h2>{{ user.username }}</h2>
+                <p class="text-muted">{{ user.email }}</p>
+                {% if user.profile.bio %}
+                    <p>{{ user.profile.bio }}</p>
+                {% endif %}
+                <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Profili Düzenle
+                </a>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Kütüphanem</h5>
+                            <a href="{% url 'library' %}" class="btn btn-sm btn-outline-primary">Tümünü Görüntüle</a>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for user_book in user.user_books.all|slice:":4" %}
+                                    <div class="col-md-3">
+                                        <div class="card book-card h-100">
+                                            <img src="{{ user_book.book.cover_image.url }}" class="card-img-top book-cover" alt="{{ user_book.book.title }}">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-0">{{ user_book.book.title }}</h6>
+                                                <p class="card-text small text-muted">{{ user_book.book.author }}</p>
+                                                <div class="progress progress-sm mb-1">
+                                                    {% with completion=user_book.completion %}
+                                                    {% if completion < 5 %}
+                                                    <div class="progress-bar progress-width-0" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 10 %}
+                                                    <div class="progress-bar progress-width-5" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 15 %}
+                                                    <div class="progress-bar progress-width-10" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 20 %}
+                                                    <div class="progress-bar progress-width-15" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 25 %}
+                                                    <div class="progress-bar progress-width-20" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 30 %}
+                                                    <div class="progress-bar progress-width-25" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 35 %}
+                                                    <div class="progress-bar progress-width-30" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 40 %}
+                                                    <div class="progress-bar progress-width-35" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 45 %}
+                                                    <div class="progress-bar progress-width-40" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 50 %}
+                                                    <div class="progress-bar progress-width-45" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 55 %}
+                                                    <div class="progress-bar progress-width-50" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 60 %}
+                                                    <div class="progress-bar progress-width-55" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 65 %}
+                                                    <div class="progress-bar progress-width-60" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 70 %}
+                                                    <div class="progress-bar progress-width-65" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 75 %}
+                                                    <div class="progress-bar progress-width-70" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 80 %}
+                                                    <div class="progress-bar progress-width-75" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 85 %}
+                                                    <div class="progress-bar progress-width-80" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 90 %}
+                                                    <div class="progress-bar progress-width-85" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 95 %}
+                                                    <div class="progress-bar progress-width-90" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% elif completion < 100 %}
+                                                    <div class="progress-bar progress-width-95" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% else %}
+                                                    <div class="progress-bar progress-width-100" role="progressbar" aria-valuenow="{{ completion }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    {% endif %}
+                                                    {% endwith %}
+                                                </div>
+                                                <small>{{ user_book.completion }}% Tamamlandı</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="col">
+                                        <p class="text-muted">Henüz kütüphanenizde kitap bulunmuyor.</p>
+                                        <a href="{% url 'home' %}" class="btn btn-sm btn-primary">Kitap Keşfet</a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Favori Kitaplarım</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for user_book in user.user_books.filter.is_favorite|slice:":4" %}
+                                    <div class="col-md-3">
+                                        <div class="card book-card h-100">
+                                            <img src="{{ user_book.book.cover_image.url }}" class="card-img-top book-cover" alt="{{ user_book.book.title }}">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title mb-0">{{ user_book.book.title }}</h6>
+                                                <p class="card-text small text-muted">{{ user_book.book.author }}</p>
+                                            </div>
+                                            <div class="card-footer p-2">
+                                                <small class="text-warning"><i class="fas fa-star"></i> Favori</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% empty %}
+                                    <div class="col">
+                                        <p class="text-muted">Henüz favori kitabınız bulunmuyor.</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

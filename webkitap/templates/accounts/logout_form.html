@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Çıkış Yap{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Çıkış Yapılıyor</h4>
+                </div>
+                <div class="card-body">
+                    <p>Hesabınızdan çıkış yapmak istediğinize emin misiniz?</p>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Evet, Çıkış Yap
+                        </button>
+                        <a href="{% url 'home' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> İptal
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

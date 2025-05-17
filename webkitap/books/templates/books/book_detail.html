@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ book.title }} - Kitaplarım{% endblock %}
+
+{% block extra_css %}
+<style>
+    .book-detail-header {
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .book-cover-img {
+        max-height: 400px;
+        object-fit: contain;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    }
+    
+    .book-info {
+        font-size: 1.1rem;
+    }
+    
+    .category-badge {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .line-divider {
+        width: 1px;
+        height: 30px;
+        background-color: rgba(0,0,0,0.1);
+        margin: 0 15px;
+    }
+    
+    .reading-status-btn {
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+    
+    .reading-session-form {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="book-detail-header" id="bookHeader" 
+    data-background-color="{{ book.background_color }}" 
+    data-text-color="{{ book.nav_tint_color }}">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover-img img-fluid">
+            </div>
+            <div class="col-md-8">
+                <h1 class="mb-2">{{ book.title }}</h1>
+                <h5 class="mb-4">{{ book.author }}</h5>
+                
+                <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
+                    <div class="text-center">
+                        <h4>{{ book.rating }}</h4>
+                        <p class="mb-0">Puan</p>
+                    </div>
+                    
+                    <div class="line-divider"></div>
+                    
+                    <div class="text-center">
+                        <h4>{{ book.page_count }}</h4>
+                        <p class="mb-0">Sayfa</p>
+                    </div>
+                    
+                    <div class="line-divider"></div>
+                    
+                    <div class="text-center">
+                        <h4>{{ book.language }}</h4>
+                        <p class="mb-0">Dil</p>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    {% for category in book.categories.all %}
+                    <a href="{% url 'category_books' category.id %}" class="badge bg-primary category-badge">{{ category.name }}</a>
+                    {% endfor %}
+                </div>
+                
+                {% if user.is_authenticated %}
+                    {% if is_in_library %}
+                    <div class="d-flex flex-wrap mb-3">
+                        <form action="{% url 'update_reading_status' book.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="reading_status" value="want_to_read">
+                            <button type="submit" class="btn btn-outline-primary reading-status-btn {% if user_book.reading_status == 'want_to_read' %}active{% endif %}">
+                                <i class="fas fa-bookmark"></i> Okuyacağım
+                            </button>
+                        </form>
+                        
+                        <form action="{% url 'update_reading_status' book.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="reading_status" value="reading">
+                            <button type="submit" class="btn btn-outline-warning reading-status-btn {% if user_book.reading_status == 'reading' %}active{% endif %}">
+                                <i class="fas fa-book-open"></i> Okuyorum
+                            </button>
+                        </form>
+                        
+                        <form action="{% url 'update_reading_status' book.id %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="reading_status" value="read">
+                            <button type="submit" class="btn btn-outline-success reading-status-btn {% if user_book.reading_status == 'read' %}active{% endif %}">
+                                <i class="fas fa-book"></i> Okudum
+                            </button>
+                        </form>
+                    </div>
+                    
+                    {% if user_book and user_book.completion > 0 %}
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar" role="progressbar" id="bookProgressBar"
+                             data-completion="{{ user_book.completion }}"
+                             aria-valuemin="0" aria-valuemax="100">{{ user_book.completion }}%</div>
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'remove_from_library' book.id %}" class="btn btn-danger">
+                        <i class="fas fa-minus-circle"></i> Kütüphanemden Çıkar
+                    </a>
+                    
+                    {% if user_book and user_book.reading_status == 'reading' %}
+                    <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#readingSessionModal">
+                        <i class="fas fa-clock"></i> Okuma Seansı Kaydet
+                    </button>
+                    {% endif %}
+                    
+                    {% else %}
+                    <a href="{% url 'add_to_library' book.id %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i> Kütüphaneme Ekle
+                    </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Kütüphanenize eklemek için giriş yapın
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Kitap Açıklaması</h3>
+                </div>
+                <div class="card-body">
+                    <div class="book-info">
+                        {{ book.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_authenticated and is_in_library and user_book.reading_status == 'reading' %}
+    <!-- Okuma İstatistikleri -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">Okuma İstatistiklerim</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <h4>{{ user_book.total_reading_time }} dakika</h4>
+                            <p>Toplam Okuma Süresi</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h4>{{ reading_sessions|length }}</h4>
+                            <p>Okuma Seansı</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h4>{{ user_book.completion }}%</h4>
+                            <p>Tamamlanma</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Okuma Seansı Modal -->
+{% if user.is_authenticated and is_in_library and user_book.reading_status == 'reading' %}
+<div class="modal fade" id="readingSessionModal" tabindex="-1" aria-labelledby="readingSessionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="readingSessionModalLabel">Okuma Seansı Kaydet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'record_reading_session' book.id %}" method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Okuma Süresi (dakika)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="pages_read" class="form-label">Okunan Sayfa Sayısı</label>
+                        <input type="number" class="form-control" id="pages_read" name="pages_read" min="1" max="{{ book.page_count }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notlar (İsteğe Bağlı)</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Kitap başlık renklerini ayarla
+        const bookHeader = document.getElementById('bookHeader');
+        if (bookHeader) {
+            const bgColor = bookHeader.dataset.backgroundColor;
+            const textColor = bookHeader.dataset.textColor;
+            bookHeader.style.backgroundColor = bgColor;
+            bookHeader.style.color = textColor;
+        }
+        
+        // İlerleme çubuğunu ayarla
+        const progressBar = document.getElementById('bookProgressBar');
+        if (progressBar) {
+            const completion = progressBar.dataset.completion;
+            progressBar.style.width = completion + '%';
+            progressBar.setAttribute('aria-valuenow', completion);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 

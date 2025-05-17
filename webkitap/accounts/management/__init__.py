@@ -1,0 +1,1 @@
+# Bu dosya, "management" klasörünün bir Python paketi olduğunu belirtir 

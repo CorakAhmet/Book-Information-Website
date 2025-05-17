@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Giriş Yap | Kitaplarım{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h1 class="mb-4 text-center">Giriş Yap</h1>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Kullanıcı Adı</label>
+                            <input type="text" name="username" class="form-control" id="id_username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_password" class="form-label">Şifre</label>
+                            <input type="password" name="password" class="form-control" id="id_password" required>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Giriş Yap</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        <p>Hesabınız yok mu? <a href="{% url 'register' %}">Kaydolun</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Bildirimlerim{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">Bildirimlerim</h2>
+            
+            {% if notifications %}
+                <div class="d-flex justify-content-end mb-3">
+                    <a href="{% url 'mark_all_read' %}" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-check-double"></i> Tümünü Okundu İşaretle
+                    </a>
+                </div>
+                
+                <div class="list-group">
+                    {% for notification in notifications %}
+                        <div class="list-group-item list-group-item-action {% if not notification.is_read %}list-group-item-primary{% endif %}">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">
+                                    {% if notification.notification_type == 'reading_goal' %}
+                                        <i class="fas fa-bullseye text-success"></i>
+                                    {% elif notification.notification_type == 'system' %}
+                                        <i class="fas fa-cog text-secondary"></i>
+                                    {% elif notification.notification_type == 'book_recommendation' %}
+                                        <i class="fas fa-book-open text-info"></i>
+                                    {% elif notification.notification_type == 'reminder' %}
+                                        <i class="fas fa-bell text-warning"></i>
+                                    {% endif %}
+                                    {{ notification.title }}
+                                </h5>
+                                <small>{{ notification.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">{{ notification.message }}</p>
+                            <div class="mt-2 d-flex justify-content-between">
+                                <div>
+                                    {% if notification.link %}
+                                        <a href="{{ notification.link }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-external-link-alt"></i> Görüntüle
+                                        </a>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if not notification.is_read %}
+                                        <a href="{% url 'mark_notification_read' notification.id %}" class="btn btn-sm btn-outline-success me-2">
+                                            <i class="fas fa-check"></i> Okundu İşaretle
+                                        </a>
+                                    {% endif %}
+                                    <a href="{% url 'delete_notification' notification.id %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i> Sil
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Henüz bildiriminiz bulunmamaktadır.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

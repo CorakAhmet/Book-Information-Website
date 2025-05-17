@@ -1,0 +1,200 @@
+/* Tema CSS - Karanlık/Açık Mod */
+
+/* Karanlık mod teması */
+html[data-theme='dark'] {
+    --background-color: #121212;
+    --text-color: #ffffff;
+    --card-bg: #1e1e1e;
+    --border-color: #444;
+    --input-bg: #2a2a2a;
+    --input-text: #ffffff;
+    --link-color: #77bbff;
+    --navbar-bg: #1a1a2e;
+    --footer-bg: #1a1a2e;
+    --alert-info-bg: #152238;
+    --alert-success-bg: #103215;
+    --alert-warning-bg: #332a13;
+    --alert-danger-bg: #321111;
+    --dropdown-hover: #2a3a5a;
+    --form-check-input-bg: #444;
+    --form-check-input-checked-bg: #0d6efd;
+}
+
+/* Açık mod teması */
+html[data-theme='light'] {
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --input-bg: #ffffff;
+    --input-text: #333333;
+    --link-color: #0d6efd;
+    --navbar-bg: #0d6efd;
+    --footer-bg: #343a40;
+    --alert-info-bg: #cff4fc;
+    --alert-success-bg: #d1e7dd;
+    --alert-warning-bg: #fff3cd;
+    --alert-danger-bg: #f8d7da;
+    --dropdown-hover: #e9ecef;
+    --form-check-input-bg: #fff;
+    --form-check-input-checked-bg: #0d6efd;
+}
+
+/* Genel stillendirmeler */
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar {
+    background-color: var(--navbar-bg) !important;
+}
+
+.card, .list-group-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.footer, .bg-dark {
+    background-color: var(--footer-bg) !important;
+    color: #fff !important;
+}
+
+input, select, textarea {
+    background-color: var(--input-bg) !important;
+    color: var(--input-text) !important;
+    border-color: var(--border-color) !important;
+}
+
+a:not(.btn):not(.nav-link) {
+    color: var(--link-color);
+}
+
+/* Form elemanları */
+.form-control:focus {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+}
+
+/* Karanlık mod için daha yüksek kontrast ekleyelim */
+html[data-theme='dark'] .card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .table {
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Form kontrol elementlerinin düzgün görünmesi için */
+.form-check-input {
+    background-color: var(--form-check-input-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--form-check-input-checked-bg) !important;
+}
+
+/* Tema switch kontrolünün düzgün görünmesi için */
+#themeSwitch {
+    cursor: pointer;
+}
+
+html[data-theme='dark'] .form-check-label {
+    color: white;
+}
+
+/* Uyarılar */
+.alert-info {
+    background-color: var(--alert-info-bg);
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.alert-success {
+    background-color: var(--alert-success-bg);
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.alert-warning {
+    background-color: var(--alert-warning-bg);
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.alert-danger {
+    background-color: var(--alert-danger-bg);
+    color: var(--text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Tema değiştirme animasyonu */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Dropdown menüler */
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+}
+
+.dropdown-item {
+    color: var(--text-color);
+}
+
+.dropdown-item:hover {
+    background-color: var(--dropdown-hover);
+    color: var(--text-color);
+}
+
+/* Tablolar */
+table {
+    color: var(--text-color) !important;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme='dark'] .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Modal */
+.modal-content {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* Görsellerin karanlık moddaki görünümü */
+html[data-theme='dark'] img:not(.navbar-brand img) {
+    filter: brightness(0.9) contrast(1.1);
+}
+
+/* Yüksek kontrast metin renklerini ekleme */
+html[data-theme='dark'] h1, 
+html[data-theme='dark'] h2, 
+html[data-theme='dark'] h3, 
+html[data-theme='dark'] h4, 
+html[data-theme='dark'] h5, 
+html[data-theme='dark'] h6 {
+    color: #ffffff;
+}
+
+/* Butonlar için karanlık mod düzenlemesi */
+html[data-theme='dark'] .btn-outline-secondary {
+    color: #adb5bd;
+    border-color: #adb5bd;
+}
+
+html[data-theme='dark'] .btn-outline-secondary:hover {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+} 

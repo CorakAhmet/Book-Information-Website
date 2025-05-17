@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ form_title }} | Kitaplarım{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .required label:after {
+        content: " *";
+        color: red;
+    }
+    .select2-container .select2-selection--multiple {
+        min-height: 38px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">{{ form_title }}</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" id="book-form">
+                        {% csrf_token %}
+                        
+                        <!-- Temel Bilgiler -->
+                        <h4 class="mb-3">Temel Bilgiler</h4>
+                        <div class="form-group required">
+                            <label for="id_title">Kitap Adı</label>
+                            {{ form.title.errors }}
+                            <input type="text" name="title" id="id_title" class="form-control {% if form.title.errors %}is-invalid{% endif %}" value="{{ form.title.value|default:'' }}" required>
+                        </div>
+                        
+                        <div class="form-group required">
+                            <label for="id_author">Yazar</label>
+                            {{ form.author.errors }}
+                            <input type="text" name="author" id="id_author" class="form-control {% if form.author.errors %}is-invalid{% endif %}" value="{{ form.author.value|default:'' }}" required>
+                        </div>
+                        
+                        <div class="form-group required">
+                            <label for="id_description">Açıklama</label>
+                            {{ form.description.errors }}
+                            <textarea name="description" id="id_description" rows="5" class="form-control {% if form.description.errors %}is-invalid{% endif %}" required>{{ form.description.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="form-group required">
+                            <label for="id_cover_image">Kitap Kapağı</label>
+                            {{ form.cover_image.errors }}
+                            <input type="file" name="cover_image" id="id_cover_image" class="form-control {% if form.cover_image.errors %}is-invalid{% endif %}" accept="image/*" {% if not is_edit %}required{% endif %}>
+                            <div class="form-text">
+                                Önerilen boyut: 400x600 piksel
+                                {% if is_edit %}<br>Yeni bir resim seçmezseniz, mevcut kapak resmi korunacaktır.{% endif %}
+                            </div>
+                            <div class="mt-2 {% if not book.cover_image %}d-none{% endif %}" id="image-preview-container">
+                                <img id="image-preview" src="{% if book.cover_image %}{{ book.cover_image.url }}{% else %}#{% endif %}" alt="Kapak Önizleme" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
+                        </div>
+                        
+                        <!-- Detaylar -->
+                        <h4 class="mt-4 mb-3">Detaylar</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_page_count">Sayfa Sayısı</label>
+                                    {{ form.page_count.errors }}
+                                    <input type="number" name="page_count" id="id_page_count" class="form-control {% if form.page_count.errors %}is-invalid{% endif %}" min="1" value="{{ form.page_count.value|default:'1' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group required">
+                                    <label for="id_rating">Puanlama</label>
+                                    {{ form.rating.errors }}
+                                    <input type="number" name="rating" id="id_rating" class="form-control {% if form.rating.errors %}is-invalid{% endif %}" min="0" max="10" step="0.1" value="{{ form.rating.value|default:'5.0' }}" required>
+                                    <div class="form-text">
+                                        0-10 arası bir değer (ondalıklı olabilir, örn: 8.5)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group required">
+                            <label for="id_publication_date">İlk Yayınlanma Tarihi</label>
+                            {{ form.publication_date.errors }}
+                            <input type="date" name="publication_date" id="id_publication_date" class="form-control {% if form.publication_date.errors %}is-invalid{% endif %}" value="{{ form.publication_date.value|date:'Y-m-d'|default:'' }}">
+                            <div class="form-text">
+                                Kitabın ilk yayınlanma tarihi
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="form-group required">
+                            <label for="id_categories">Kategoriler</label>
+                            <div class="d-flex align-items-center mb-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                                    <i class="fas fa-plus"></i> Yeni Kategori Ekle
+                                </button>
+                            </div>
+                            {{ form.categories.errors }}
+                            <select name="categories" id="id_categories" class="form-control select2 {% if form.categories.errors %}is-invalid{% endif %}" multiple required>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category in form.categories.value %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mt-4 text-end">
+                            {% if is_edit %}
+                            <a href="{% url 'book_detail' book.id %}" class="btn btn-outline-secondary me-2">İptal</a>
+                            <button type="submit" class="btn btn-primary">Değişiklikleri Kaydet</button>
+                            {% else %}
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary me-2">İptal</a>
+                            <button type="submit" class="btn btn-primary">Kitap Ekle</button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kategori Ekleme Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Yeni Kategori Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <form id="category-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="category_name" class="form-label">Kategori Adı</label>
+                        <input type="text" class="form-control" id="category_name" required>
+                        <div class="invalid-feedback">
+                            Lütfen bir kategori adı girin.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-primary" id="add-category-btn">Kategori Ekle</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Select2 çoklu seçim kutusu
+        $('.select2').select2({
+            placeholder: "Kategorileri seçin",
+            allowClear: true
+        });
+        
+        // Kapak resmi önizleme
+        $('#id_cover_image').change(function() {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#image-preview').attr('src', e.target.result);
+                    $('#image-preview-container').removeClass('d-none');
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+        
+        // Kategori ekleme
+        $('#add-category-btn').click(function() {
+            var categoryName = $('#category_name').val();
+            
+            if (!categoryName) {
+                $('#category_name').addClass('is-invalid');
+                return;
+            }
+            
+            $('#category_name').removeClass('is-invalid');
+            
+            $.ajax({
+                url: '{% url "add_category" %}',
+                type: 'POST',
+                data: {
+                    'name': categoryName,
+                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: 'json',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(data) {
+                    if (data.success) {
+                        // Select2'ye yeni kategoriyi ekle
+                        var newOption = new Option(data.name, data.id, true, true);
+                        $('#id_categories').append(newOption).trigger('change');
+                        
+                        // Modal'ı kapat
+                        $('#addCategoryModal').modal('hide');
+                        
+                        // Formu temizle
+                        $('#category_name').val('');
+                    }
+                },
+                error: function() {
+                    alert('Kategori eklenirken bir hata oluştu. Lütfen tekrar deneyin.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 
